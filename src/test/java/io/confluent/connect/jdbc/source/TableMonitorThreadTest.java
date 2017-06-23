@@ -78,7 +78,7 @@ public class TableMonitorThreadTest {
 
   @Test
   public void testSingleLookup() throws Exception {
-    tableMonitorThread = new TableMonitorThread(cachedConnectionProvider, context, null, POLL_INTERVAL, null, null, DEFAULT_TABLE_TYPES);
+    tableMonitorThread = new TableMonitorThread(cachedConnectionProvider, context, null, null, POLL_INTERVAL, null, null, DEFAULT_TABLE_TYPES);
 
     EasyMock.expect(JdbcUtils.getTables(cachedConnectionProvider.getValidConnection(), null, DEFAULT_TABLE_TYPES)).andAnswer(new IAnswer<List<String>>() {
       @Override
@@ -99,7 +99,7 @@ public class TableMonitorThreadTest {
 
   @Test
   public void testWhitelist() throws Exception {
-    tableMonitorThread = new TableMonitorThread(cachedConnectionProvider, context, null, POLL_INTERVAL,
+    tableMonitorThread = new TableMonitorThread(cachedConnectionProvider, context, null, null, POLL_INTERVAL,
                                                 new HashSet<>(Arrays.asList("foo", "bar")), null, DEFAULT_TABLE_TYPES);
 
     EasyMock.expect(JdbcUtils.getTables(cachedConnectionProvider.getValidConnection(), null, DEFAULT_TABLE_TYPES)).andAnswer(new IAnswer<List<String>>() {
@@ -121,7 +121,7 @@ public class TableMonitorThreadTest {
 
   @Test
   public void testBlacklist() throws Exception {
-    tableMonitorThread = new TableMonitorThread(cachedConnectionProvider, context, null, POLL_INTERVAL,
+    tableMonitorThread = new TableMonitorThread(cachedConnectionProvider, context, null, null, POLL_INTERVAL,
                                                 null, new HashSet<>(Arrays.asList("bar", "baz")), DEFAULT_TABLE_TYPES);
 
     EasyMock.expect(JdbcUtils.getTables(cachedConnectionProvider.getValidConnection(), null, DEFAULT_TABLE_TYPES)).andAnswer(new IAnswer<List<String>>() {
@@ -143,7 +143,7 @@ public class TableMonitorThreadTest {
 
   @Test
   public void testReconfigOnUpdate() throws Exception {
-    tableMonitorThread = new TableMonitorThread(cachedConnectionProvider, context, null, POLL_INTERVAL, null, null, DEFAULT_TABLE_TYPES);
+    tableMonitorThread = new TableMonitorThread(cachedConnectionProvider, context, null, null, POLL_INTERVAL, null, null, DEFAULT_TABLE_TYPES);
 
     EasyMock.expect(JdbcUtils.getTables(cachedConnectionProvider.getValidConnection(), null, DEFAULT_TABLE_TYPES)).andReturn(FIRST_TOPIC_LIST);
     // Returning same list should not change results
@@ -181,7 +181,7 @@ public class TableMonitorThreadTest {
 
   @Test
   public void testTableType() throws Exception {
-    tableMonitorThread = new TableMonitorThread(cachedConnectionProvider, context, null, POLL_INTERVAL, null, null, VIEW_TABLE_TYPES);
+    tableMonitorThread = new TableMonitorThread(cachedConnectionProvider, context, null, null, POLL_INTERVAL, null, null, VIEW_TABLE_TYPES);
 
     EasyMock.expect(JdbcUtils.getTables(cachedConnectionProvider.getValidConnection(), null, VIEW_TABLE_TYPES)).andAnswer(new IAnswer<List<String>>() {
       @Override

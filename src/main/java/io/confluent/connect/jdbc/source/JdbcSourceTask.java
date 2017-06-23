@@ -112,6 +112,8 @@ public class JdbcSourceTask extends SourceTask {
       offsets = context.offsetStorageReader().offsets(partitions);
     }
 
+    String catalogPattern
+        = config.getString(JdbcSourceTaskConfig.CONNECTION_CATALOG_CONFIG);
     String schemaPattern
         = config.getString(JdbcSourceTaskConfig.SCHEMA_PATTERN_CONFIG);
     String incrementingColumn
@@ -128,7 +130,7 @@ public class JdbcSourceTask extends SourceTask {
       switch (queryMode) {
         case TABLE:
           if (validateNonNulls) {
-            validateNonNullable(mode, schemaPattern, tableOrQuery, incrementingColumn, timestampColumn);
+            validateNonNullable(mode, catalogPattern, schemaPattern, tableOrQuery, incrementingColumn, timestampColumn);
           }
           partition = Collections.singletonMap(
               JdbcSourceConnectorConstants.TABLE_NAME_KEY, tableOrQuery);
@@ -149,15 +151,15 @@ public class JdbcSourceTask extends SourceTask {
         tableQueue.add(new BulkTableQuerier(queryMode, tableOrQuery, schemaPattern,
                 topicPrefix, mapNumerics));
       } else if (mode.equals(JdbcSourceTaskConfig.MODE_INCREMENTING)) {
-        tableQueue.add(new TimestampIncrementingTableQuerier(
+        tableQueue.add(new TimestampIncrementingTableQuerier(config,
             queryMode, tableOrQuery, topicPrefix, null, incrementingColumn, offset,
                 timestampDelayInterval, schemaPattern, mapNumerics));
       } else if (mode.equals(JdbcSourceTaskConfig.MODE_TIMESTAMP)) {
-        tableQueue.add(new TimestampIncrementingTableQuerier(
+        tableQueue.add(new TimestampIncrementingTableQuerier(config,
             queryMode, tableOrQuery, topicPrefix, timestampColumn, null, offset,
                 timestampDelayInterval, schemaPattern, mapNumerics));
       } else if (mode.endsWith(JdbcSourceTaskConfig.MODE_TIMESTAMP_INCREMENTING)) {
-        tableQueue.add(new TimestampIncrementingTableQuerier(
+        tableQueue.add(new TimestampIncrementingTableQuerier(config,
             queryMode, tableOrQuery, topicPrefix, timestampColumn, incrementingColumn,
                 offset, timestampDelayInterval, schemaPattern, mapNumerics));
       }
@@ -197,7 +199,9 @@ public class JdbcSourceTask extends SourceTask {
       final List<SourceRecord> results = new ArrayList<>();
       try {
         log.debug("Checking for next block of results from {}", querier.toString());
-        querier.maybeStartQuery(cachedConnectionProvider.getValidConnection());
+        String catalog = config.getString(JdbcSourceConnectorConfig.CONNECTION_CATALOG_CONFIG);
+        String schema = config.getString(JdbcSourceConnectorConfig.SCHEMA_PATTERN_CONFIG);
+        querier.maybeStartQuery(cachedConnectionProvider.getValidConnection(catalog, schema));
 
         int batchMaxRows = config.getInt(JdbcSourceTaskConfig.BATCH_MAX_ROWS_CONFIG);
         boolean hadNext = true;
@@ -236,9 +240,9 @@ public class JdbcSourceTask extends SourceTask {
     tableQueue.add(expectedHead);
   }
 
-  private void validateNonNullable(String incrementalMode, String schemaPattern, String table, String incrementingColumn, String timestampColumn) {
+  private void validateNonNullable(String incrementalMode, String catalogPattern, String schemaPattern, String table, String incrementingColumn, String timestampColumn) {
     try {
-      final Connection connection = cachedConnectionProvider.getValidConnection();
+      final Connection connection = cachedConnectionProvider.getValidConnection(catalogPattern, schemaPattern);
       // Validate that requested columns for offsets are NOT NULL. Currently this is only performed
       // for table-based copying because custom query mode doesn't allow this to be looked up
       // without a query or parsing the query since we don't have a table name.

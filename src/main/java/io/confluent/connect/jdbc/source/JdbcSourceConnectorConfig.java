@@ -48,6 +48,12 @@ public class JdbcSourceConnectorConfig extends AbstractConfig {
   private static final String CONNECTION_PASSWORD_DOC = "JDBC connection password.";
   private static final String CONNECTION_PASSWORD_DISPLAY = "JDBC Password";
 
+  public static final String CONNECTION_CATALOG_CONFIG = "connection.catalog";
+  private static final String CONNECTION_CATALOG_DOC = 
+          "Sets the given catalog name in order to select a subspace "
+          + "of this Connection object's database in which to work. ";
+  private static final String CONNECTIION_CATALOG_DISPLAY = "Catalog";
+
   public static final String POLL_INTERVAL_MS_CONFIG = "poll.interval.ms";
   private static final String POLL_INTERVAL_MS_DOC = "Frequency in ms to poll for new data in "
                                                      + "each table.";
@@ -102,6 +108,25 @@ public class JdbcSourceConnectorConfig extends AbstractConfig {
       + "not be nullable.";
   public static final String TIMESTAMP_COLUMN_NAME_DEFAULT = "";
   private static final String TIMESTAMP_COLUMN_NAME_DISPLAY = "Timestamp Column Name";
+  
+  public static final String TIMESTAMP_DEFAULT_OFFSET_CONFIG = "timestamp.default.offset";
+  private static final String TIMESTAMP_DEFAULT_OFFSET_DOC =
+      "The default timestamp offset when current offset is null on first startup. Options include:\n"
+      + "  * earlist - use the min timestamp on db.\n"
+      + "  * latest - use the max timestamp on db. Default value.\n"
+      + "  * A number in Long - the specified number of milliseconds before the max timestamp on db.";
+  private static final String TIMESTAMP_DEFAULT_OFFSET_DISPLAY = "Timestamp Default Offset";
+
+  public static final String TIMESTAMP_COLUMN_TYPE_CONFIG = "timestamp.column.type";
+  private static final String TIMESTAMP_COLUMN_TYPE_DOC =
+      "The type of the timestamp column to use to set parameters in query.\n"
+      + "  * TIMESTAMP - data type is timestamp. Default value.\n"
+      + "  * DATE - data type is date.";
+  public static final String TIMESTAMP_COLUMN_TYPE_DEFAULT = "TIMESTAMP";
+  private static final String TIMESTAMP_COLUMN_TYPE_DISPLAY = "Timestamp Column Type";
+
+  public static final String TIMESTAMP_DEFAULT_OFFSET_EARLIST = "earlist";
+  public static final String TIMESTAMP_DEFAULT_OFFSET_LATEST = "latest";
 
   public static final String TABLE_POLL_INTERVAL_MS_CONFIG = "table.poll.interval.ms";
   private static final String TABLE_POLL_INTERVAL_MS_DOC =
@@ -195,6 +220,7 @@ public class JdbcSourceConnectorConfig extends AbstractConfig {
         .define(CONNECTION_URL_CONFIG, Type.STRING, Importance.HIGH, CONNECTION_URL_DOC, DATABASE_GROUP, 1, Width.LONG, CONNECTION_URL_DISPLAY, Arrays.asList(TABLE_WHITELIST_CONFIG, TABLE_BLACKLIST_CONFIG))
         .define(CONNECTION_USER_CONFIG, Type.STRING, null, Importance.HIGH, CONNECTION_USER_DOC, DATABASE_GROUP, 2, Width.LONG, CONNECTION_USER_DISPLAY)
         .define(CONNECTION_PASSWORD_CONFIG, Type.PASSWORD, null, Importance.HIGH, CONNECTION_PASSWORD_DOC, DATABASE_GROUP, 3, Width.SHORT, CONNECTION_PASSWORD_DISPLAY)
+        .define(CONNECTION_CATALOG_CONFIG, Type.STRING, null, Importance.MEDIUM, CONNECTION_CATALOG_DOC, DATABASE_GROUP, 4, Width.SHORT, CONNECTIION_CATALOG_DISPLAY)
         .define(TABLE_WHITELIST_CONFIG, Type.LIST, TABLE_WHITELIST_DEFAULT, Importance.MEDIUM, TABLE_WHITELIST_DOC, DATABASE_GROUP, 4, Width.LONG, TABLE_WHITELIST_DISPLAY,
                 TABLE_RECOMMENDER)
         .define(TABLE_BLACKLIST_CONFIG, Type.LIST, TABLE_BLACKLIST_DEFAULT, Importance.MEDIUM, TABLE_BLACKLIST_DOC, DATABASE_GROUP, 5, Width.LONG, TABLE_BLACKLIST_DISPLAY,
@@ -208,6 +234,10 @@ public class JdbcSourceConnectorConfig extends AbstractConfig {
         .define(INCREMENTING_COLUMN_NAME_CONFIG, Type.STRING, INCREMENTING_COLUMN_NAME_DEFAULT, Importance.MEDIUM, INCREMENTING_COLUMN_NAME_DOC, MODE_GROUP, 2, Width.MEDIUM, INCREMENTING_COLUMN_NAME_DISPLAY,
                 MODE_DEPENDENTS_RECOMMENDER)
         .define(TIMESTAMP_COLUMN_NAME_CONFIG, Type.STRING, TIMESTAMP_COLUMN_NAME_DEFAULT, Importance.MEDIUM, TIMESTAMP_COLUMN_NAME_DOC, MODE_GROUP, 3, Width.MEDIUM, TIMESTAMP_COLUMN_NAME_DISPLAY,
+                MODE_DEPENDENTS_RECOMMENDER)
+        .define(TIMESTAMP_COLUMN_TYPE_CONFIG, Type.STRING, TIMESTAMP_COLUMN_TYPE_DEFAULT, Importance.MEDIUM, TIMESTAMP_COLUMN_TYPE_DOC, MODE_GROUP, 3, Width.MEDIUM, TIMESTAMP_COLUMN_TYPE_DISPLAY,
+                MODE_DEPENDENTS_RECOMMENDER)
+        .define(TIMESTAMP_DEFAULT_OFFSET_CONFIG, Type.STRING, TIMESTAMP_DEFAULT_OFFSET_LATEST, Importance.MEDIUM, TIMESTAMP_DEFAULT_OFFSET_DOC, MODE_GROUP, 4, Width.MEDIUM, TIMESTAMP_DEFAULT_OFFSET_DISPLAY,
                 MODE_DEPENDENTS_RECOMMENDER)
         .define(VALIDATE_NON_NULL_CONFIG, Type.BOOLEAN, VALIDATE_NON_NULL_DEFAULT, Importance.LOW, VALIDATE_NON_NULL_DOC, MODE_GROUP, 4, Width.SHORT, VALIDATE_NON_NULL_DISPLAY,
                 MODE_DEPENDENTS_RECOMMENDER)

@@ -94,6 +94,7 @@ public class JdbcSourceConnector extends SourceConnector {
                                  + JdbcSourceConnectorConfig.TABLE_BLACKLIST_CONFIG + " are "
                                  + "exclusive.");
     String query = config.getString(JdbcSourceConnectorConfig.QUERY_CONFIG);
+    String catalogPattern = config.getString(JdbcSourceConnectorConfig.CONNECTION_CATALOG_CONFIG);
     String schemaPattern = config.getString(JdbcSourceConnectorConfig.SCHEMA_PATTERN_CONFIG);
     if (!query.isEmpty()) {
       if (whitelistSet != null || blacklistSet != null)
@@ -103,7 +104,7 @@ public class JdbcSourceConnector extends SourceConnector {
       // query.
       whitelistSet = Collections.emptySet();
     }
-    tableMonitorThread = new TableMonitorThread(cachedConnectionProvider, context, schemaPattern, tablePollMs, whitelistSet, blacklistSet, tableTypesSet);
+    tableMonitorThread = new TableMonitorThread(cachedConnectionProvider, context, catalogPattern, schemaPattern, tablePollMs, whitelistSet, blacklistSet, tableTypesSet);
     tableMonitorThread.start();
   }
 

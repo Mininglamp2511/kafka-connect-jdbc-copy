@@ -47,6 +47,10 @@ public class CachedConnectionProvider {
   }
 
   public synchronized Connection getValidConnection() {
+    return this.getValidConnection(null, null);
+  }
+
+  public synchronized Connection getValidConnection(String catalog, String schema) {
     try {
       if (connection == null) {
         newConnection();
@@ -54,6 +58,14 @@ public class CachedConnectionProvider {
         log.info("The database connection is invalid. Reconnecting...");
         closeQuietly();
         newConnection();
+      }
+
+      // set catalog & schema when specified
+      if (catalog != null) {
+        connection.setCatalog(catalog);
+      }
+      if (schema != null) {
+        connection.setSchema(schema);
       }
     } catch (SQLException sqle) {
       throw new ConnectException(sqle);
