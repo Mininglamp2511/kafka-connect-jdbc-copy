@@ -112,10 +112,11 @@ public class JdbcSourceConnectorConfig extends AbstractConfig {
   public static final String TIMESTAMP_DEFAULT_OFFSET_CONFIG = "timestamp.default.offset";
   private static final String TIMESTAMP_DEFAULT_OFFSET_DOC =
       "The default timestamp offset when current offset is null on first startup. Options include:\n"
-      + "  * earlist - use the min timestamp on db.\n"
-      + "  * latest - use the max timestamp on db. Default value.\n"
-      + "  * A number in Long - the specified number of milliseconds before the max timestamp on db.";
+      + "  * MAX - use the max timestamp on db. Default value.\n"
+      + "  * A number in Long - the specified number of milliseconds as timestamp from when to retrieve data.";
   private static final String TIMESTAMP_DEFAULT_OFFSET_DISPLAY = "Timestamp Default Offset";
+
+  public static final String TIMESTAMP_DEFAULT_OFFSET_DEFAULT = "MAX";
 
   public static final String TIMESTAMP_COLUMN_TYPE_CONFIG = "timestamp.column.type";
   private static final String TIMESTAMP_COLUMN_TYPE_DOC =
@@ -124,9 +125,6 @@ public class JdbcSourceConnectorConfig extends AbstractConfig {
       + "  * DATE - data type is date.";
   public static final String TIMESTAMP_COLUMN_TYPE_DEFAULT = "TIMESTAMP";
   private static final String TIMESTAMP_COLUMN_TYPE_DISPLAY = "Timestamp Column Type";
-
-  public static final String TIMESTAMP_DEFAULT_OFFSET_EARLIST = "earlist";
-  public static final String TIMESTAMP_DEFAULT_OFFSET_LATEST = "latest";
 
   public static final String TABLE_POLL_INTERVAL_MS_CONFIG = "table.poll.interval.ms";
   private static final String TABLE_POLL_INTERVAL_MS_DOC =
@@ -237,7 +235,7 @@ public class JdbcSourceConnectorConfig extends AbstractConfig {
                 MODE_DEPENDENTS_RECOMMENDER)
         .define(TIMESTAMP_COLUMN_TYPE_CONFIG, Type.STRING, TIMESTAMP_COLUMN_TYPE_DEFAULT, Importance.MEDIUM, TIMESTAMP_COLUMN_TYPE_DOC, MODE_GROUP, 3, Width.MEDIUM, TIMESTAMP_COLUMN_TYPE_DISPLAY,
                 MODE_DEPENDENTS_RECOMMENDER)
-        .define(TIMESTAMP_DEFAULT_OFFSET_CONFIG, Type.STRING, TIMESTAMP_DEFAULT_OFFSET_LATEST, Importance.MEDIUM, TIMESTAMP_DEFAULT_OFFSET_DOC, MODE_GROUP, 4, Width.MEDIUM, TIMESTAMP_DEFAULT_OFFSET_DISPLAY,
+        .define(TIMESTAMP_DEFAULT_OFFSET_CONFIG, Type.STRING, TIMESTAMP_DEFAULT_OFFSET_DEFAULT, Importance.MEDIUM, TIMESTAMP_DEFAULT_OFFSET_DOC, MODE_GROUP, 4, Width.MEDIUM, TIMESTAMP_DEFAULT_OFFSET_DISPLAY,
                 MODE_DEPENDENTS_RECOMMENDER)
         .define(VALIDATE_NON_NULL_CONFIG, Type.BOOLEAN, VALIDATE_NON_NULL_DEFAULT, Importance.LOW, VALIDATE_NON_NULL_DOC, MODE_GROUP, 4, Width.SHORT, VALIDATE_NON_NULL_DISPLAY,
                 MODE_DEPENDENTS_RECOMMENDER)

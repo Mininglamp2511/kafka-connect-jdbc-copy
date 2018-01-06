@@ -215,25 +215,17 @@ public class TimestampIncrementingTableQuerier extends TableQuerier {
 
   Timestamp getTimestampOffset(Timestamp currentTimeOnDb) throws SQLException {
     if (offset.getTimestampOffset() == null) {
-      Timestamp timestamp = null;
+      Timestamp timestamp = currentTimeOnDb;
       String defaultOffset = config.getString(JdbcSourceTaskConfig.TIMESTAMP_DEFAULT_OFFSET_CONFIG);
-      if (defaultOffset.equals(JdbcSourceTaskConfig.TIMESTAMP_DEFAULT_OFFSET_EARLIST)) {
-        timestamp = new Timestamp(0);
-      } else {
-        Long offsets;
-        if (defaultOffset.equals(JdbcSourceTaskConfig.TIMESTAMP_DEFAULT_OFFSET_LATEST)) {
-          offsets = 0L;
-        } else {
-          try {
-            offsets = Long.valueOf(defaultOffset);
-          } catch (Exception e) {
-            offsets = 0L;
-            log.error("The config {} with value {} is not valid.", 
-                JdbcSourceTaskConfig.TIMESTAMP_DEFAULT_OFFSET_CONFIG, 
-                defaultOffset);
-          }
+      if (!defaultOffset.equals(JdbcSourceTaskConfig.TIMESTAMP_DEFAULT_OFFSET_DEFAULT)) {
+        try {
+          Long offsets = Long.valueOf(defaultOffset);
+          timestamp = new Timestamp(offsets);
+        } catch (Exception e) {
+          log.error("The config {} with value {} is not valid.",
+                  JdbcSourceTaskConfig.TIMESTAMP_DEFAULT_OFFSET_CONFIG,
+                  defaultOffset);
         }
-        timestamp = new Timestamp(currentTimeOnDb.getTime() - offsets);
       }
       offset = new TimestampIncrementingOffset(timestamp, offset.getIncrementingOffset());
     }
